@@ -1,0 +1,19 @@
+{
+  "name": "registration",
+  "version": "1.0.0",
+  "description": "simple api",
+  "main": "registration.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ank awasthi",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.3",
+    "nodemailer": "^6.5.0",
+    "nodemon": "^2.0.7"
+  }
+}
