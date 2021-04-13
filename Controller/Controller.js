@@ -41,9 +41,6 @@ exports.registration = async (req, res) => {
     const savedData = await userData.save(userData);
     console.log('This is your savedData====', savedData);
     res.status(200).json(savedData);
-    // function (err, userData) {
-    // if (savedData) throw savedData;
-    // else {
     console.log('Data Saved Successfully to the database Registration');
     // send mail with defined transport object
     var mailOptions = {
@@ -61,8 +58,6 @@ exports.registration = async (req, res) => {
       console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
       console.log('MailOptions----------', mailOptions);
     });
-    // res.status(200).json(savedData);
-    // }
   } catch (err) {
     console.log('This is my error=========================', err);
     if (err.code == 11000) {
@@ -72,18 +67,15 @@ exports.registration = async (req, res) => {
       if (email) res.status(401).json({ msg: 'Email already exists' });
       else if (username)
         res.status(401).json({ msg: 'Username already exists' });
-      //   else res.status(401).json({ msg: 'rework' });
     } else if (err.errors.email.message)
       res.status(403).json({ msg: err.errors.email.message });
     else if (err.errors) res.status(403).json({ msg: err });
-    // res.status(403).json({ msg: err });
   }
 };
 //////////////////////////////////////////////OTP Verification API////////////////////////////////
 exports.verifyOtp = async (req, res) => {
   try {
     const verifyData = await User.findOne({ email: req.body.email });
-    // console.log(verifyData);
     if (verifyData == null) throw verifyData;
     else if (!verifyData.verifyOtp(req.body.otp)) {
       res.status(401).json({ msg: 'OTP did not verified' });
@@ -97,22 +89,15 @@ exports.verifyOtp = async (req, res) => {
 //////////////////////////////////////////////////// Login API ////////////////////////////////////////////////////////////////
 exports.login = async (req, res) => {
   try {
-    const loginData = await User.findOne(
-      { $or: [{ email: req.body.email }, { username: req.body.username }] },
-      function (err, user) {
-        if (err) return err;
-        //   else if
-      }
-    );
-    // console.log('logindata===========------', loginData);
-    if (loginData == null) throw loginData;
-    else if (!loginData.validPassword(req.body.password)) {
+    const loginData = await User.findOne({
+      $or: [{ email: req.body.email }, { username: req.body.username }],
+    });
+    if (!loginData.validPassword(req.body.password)) {
       res.status(401).json({ msg: 'Password did not matched' });
     } else {
       res.status(200).json({ msg: 'Password matched, you are logged in' });
     }
   } catch (err) {
-    // throw loginData;
     res.status(401).json(err);
   }
 };
