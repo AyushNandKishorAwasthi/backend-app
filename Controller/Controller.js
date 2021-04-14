@@ -1,18 +1,20 @@
 const nodemailer = require('nodemailer');
-var User = require('../Model/User.js');
+
+const User = require('../Model/User.js');
+
 const transporter = nodemailer.createTransport({
-  host: 'sg2plcpnl0089.prod.sin2.secureserver.net',
+  host: process.env.HOST,
   port: 587,
   secure: false,
   auth: {
-    user: 'ayush@websultanate.com',
-    pass: 'Welcome@123',
+    user: process.env.FROM,
+    pass: process.env.PASSWORD,
   },
   // https://ethereal.email/create
 });
 
 function generateOTP() {
-  var digits = '0123456789';
+  const digits = '0123456789';
   let otp = '';
   for (let i = 0; i < 4; i++) {
     otp += digits[Math.floor(Math.random() * 10)];
@@ -43,8 +45,8 @@ exports.registration = async (req, res) => {
     res.status(200).json(savedData);
     console.log('Data Saved Successfully to the database Registration');
     // send mail with defined transport object
-    var mailOptions = {
-      from: 'ayush@websultanate.com',
+    const mailOptions = {
+      from: process.env.FROM,
       to: req.body.email,
       subject: 'One Time Password for User Account Registration',
       html: `Hi, your otp for email verification is ${otp}`, // html body
@@ -60,7 +62,7 @@ exports.registration = async (req, res) => {
     });
   } catch (err) {
     console.log('This is my error=========================', err);
-    if (err.code == 11000) {
+    if (err.code === 11000) {
       let {
         keyValue: { email, username },
       } = err;
@@ -114,8 +116,8 @@ exports.forgotPassword = async (req, res) => {
     if (forgotData == null) throw forgotData;
     else {
       // send mail with defined transport object
-      var mailOptions = {
-        from: 'karuna@websultanate.com',
+      const mailOptions = {
+        from: 'ayush@websultanate.com',
         to: req.body.email,
         subject: 'Otp for forgot password request: ',
         html: `Your OTP is ${fOtp}`, // html body

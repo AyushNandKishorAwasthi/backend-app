@@ -1,6 +1,5 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   firstName: String,
@@ -38,12 +37,17 @@ userSchema.methods.validPassword = function (password) {
 
 //checking if otp is a valid
 userSchema.methods.verifyOtp = function (otp) {
-  if (otp === this.otp) return true;
-  else return false;
+  if (otp === this.otp) {
+    return true;
+  }
+  return false;
 };
+
 userSchema.methods.verifyfOtp = function (fOtp) {
-  if (fOtp === this.fOtp) return true;
-  else return false;
+  if (fOtp === this.fOtp) {
+    return true;
+  }
+  return false;
 };
 //to insert otp when user requests forget password
 // userSchema.methods.forgetPassword=function(fOtp){
@@ -51,5 +55,5 @@ userSchema.methods.verifyfOtp = function (fOtp) {
 //   console.log('OTP Saved Successfully to the database');
 // }
 
-var User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;
