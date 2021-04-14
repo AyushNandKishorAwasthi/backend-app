@@ -76,8 +76,8 @@ exports.registration = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   try {
     const verifyData = await User.findOne({ email: req.body.email });
-    if (verifyData == null) throw verifyData;
-    else if (!verifyData.verifyOtp(req.body.otp)) {
+    // if (verifyData == null) throw verifyData;
+    if (!verifyData.verifyOtp(req.body.otp)) {
       res.status(401).json({ msg: 'OTP did not verified' });
     } else {
       res.status(200).json({ msg: 'OTP verified' });

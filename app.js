@@ -1,6 +1,6 @@
 var express = require('express');
 const mongoose = require('mongoose');
-app = express();
+const app = express();
 app.use(express.json()); // https://www.geeksforgeeks.org/express-js-express-json-function/
 mongoose.connect(
   'mongodb+srv://clustor0:ayushnk@cluster0.rpg4y.mongodb.net/registration',
