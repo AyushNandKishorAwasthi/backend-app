@@ -1,20 +1,34 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
+  firstName: {
+    type: String,
+    required: [true, 'Please enter your first name'],
+    minlength: 1,
+  },
+  lastName: {
+    type: String,
+    required: [true, 'Please enter your last name'],
+    minlength: 1,
+  },
   email: {
     type: String,
     unique: true, //https://masteringjs.io/tutorials/mongoose/unique
-    required: [true, 'Enter email please'],
+    required: [true, 'Please enter your email address'],
+    validate: [validator.isEmail, 'Please enter your correct email address'],
   },
   username: {
     type: String,
     unique: true,
-    required: [true, 'Enter username please'],
+    required: [true, 'Please enter your username'],
   },
-  password: String,
+  password: {
+    type: String,
+    required: [true, 'Password must not be less than 4 characters long'],
+    minlength: 4,
+  },
   dob: Date,
   otp: String,
   fOtp: String,
@@ -27,6 +41,7 @@ const userSchema = new mongoose.Schema({
 
 // hash the password
 userSchema.methods.generateHash = function (password) {
+  if (password.length <= 4) return null;
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 

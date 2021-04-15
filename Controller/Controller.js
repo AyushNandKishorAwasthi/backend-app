@@ -1,79 +1,19 @@
 const nodemailer = require('nodemailer');
-
 const User = require('../Model/User.js');
+const { transporter, generateOTP } = require('./Transporter');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.HOST,
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.FROM,
-    pass: process.env.PASSWORD,
-  },
-  // https://ethereal.email/create
-});
-
-function generateOTP() {
-  const digits = '0123456789';
-  let otp = '';
-  for (let i = 0; i < 4; i++) {
-    otp += digits[Math.floor(Math.random() * 10)];
-  }
-  return otp;
-  // https://www.geeksforgeeks.org/javascript-program-to-generate-one-time-password-otp/
-}
+// function generateOTP() {
+//   const digits = '0123456789';
+//   let otp = '';
+//   for (let i = 0; i < 4; i++) {
+//     otp += digits[Math.floor(Math.random() * 10)];
+//   }
+//   return otp;
+//   // https://www.geeksforgeeks.org/javascript-program-to-generate-one-time-password-otp/
+// }
 //////////////////////////////////////////////Registration API////////////////////////////////
-exports.registration = async (req, res) => {
-  try {
-    let otp = generateOTP();
-    let date = new Date();
-    const userData = new User({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      username: req.body.username,
-      dob: req.body.dob,
-      updatedOn: date,
-      addedOn: date,
-      otp: otp,
-      fOtp: null,
-      isValid: false,
-    });
-    userData.password = userData.generateHash(req.body.password);
-    const savedData = await userData.save(userData);
-    console.log('This is your savedData====', savedData);
-    res.status(200).json(savedData);
-    console.log('Data Saved Successfully to the database Registration');
-    // send mail with defined transport object
-    const mailOptions = {
-      from: process.env.FROM,
-      to: req.body.email,
-      subject: 'One Time Password for User Account Registration',
-      html: `Hi, your otp for email verification is ${otp}`, // html body
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
-      console.log('Message sent: %s', info.messageId);
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-      console.log('MailOptions----------', mailOptions);
-    });
-  } catch (err) {
-    console.log('This is my error=========================', err);
-    if (err.code === 11000) {
-      let {
-        keyValue: { email, username },
-      } = err;
-      if (email) res.status(401).json({ msg: 'Email already exists' });
-      else if (username)
-        res.status(401).json({ msg: 'Username already exists' });
-    } else if (err.errors.email.message)
-      res.status(403).json({ msg: err.errors.email.message });
-    else if (err.errors) res.status(403).json({ msg: err });
-  }
-};
+const { userRegistration } = require('./UserRegistration');
+exports.registration = userRegistration;
 //////////////////////////////////////////////OTP Verification API////////////////////////////////
 exports.verifyOtp = async (req, res) => {
   try {
@@ -94,13 +34,15 @@ exports.login = async (req, res) => {
     const loginData = await User.findOne({
       $or: [{ email: req.body.email }, { username: req.body.username }],
     });
+    if (loginData) throw loginData;
     if (!loginData.validPassword(req.body.password)) {
       res.status(401).json({ msg: 'Password did not matched' });
     } else {
       res.status(200).json({ msg: 'Password matched, you are logged in' });
     }
   } catch (err) {
-    res.status(401).json(err);
+    console.log(err);
+    res.status(401).json({ msg: 'Username does not exists' });
   }
 };
 ///////////////////////////////////////////////////// Forgot password API /////////////////////////////////////////////////////
@@ -117,7 +59,7 @@ exports.forgotPassword = async (req, res) => {
     else {
       // send mail with defined transport object
       const mailOptions = {
-        from: 'ayush@websultanate.com',
+        from: process.env.FROM,
         to: req.body.email,
         subject: 'Otp for forgot password request: ',
         html: `Your OTP is ${fOtp}`, // html body
@@ -161,6 +103,7 @@ exports.resetPassword = async (req, res) => {
       else res.status(200).json({ msg: 'Password Updated' });
     }
   } catch (error) {
-    res.status(401).json({ msg: 'Incorrect Email or Otp' });
+    res.status(401).json({ msg: error });
+    // res.status(401).json({ msg: 'Incorrect Email or Otp' });
   }
 };
