@@ -1,0 +1,5 @@
+config.env/
+node_modules/
+miscellaneous.txt/
+testemail.js/
+.gitignore/

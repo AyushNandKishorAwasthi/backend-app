@@ -1,0 +1,202 @@
+pass:bcrypt.genSalt(saltRounds, function(err, salt) {
+        bcrypt.hash(req.body.password, salt, function(err, hash) {
+            return hash;
+            // console.log('=====Bcrypt=====',pass,hash);
+            //https://www.npmjs.com/package/bcrypt
+        });
+    }),
+
+  app.post('/login', function(req, res) {
+  User.findOne({username: req.body.username}, function(err, user) {
+
+    if (!user.validPassword(req.body.password)) {
+      //password did not match
+    } else {
+      // password matched. proceed forward
+    }
+  });
+});
+
+do not use this code  line no 20=>37 
+app.post('/login',(req,res)=>{
+    let result=false;
+    console.log('myhash===============',myHash);
+        if(email===req.body.email){
+            result=bcrypt.compare(req.body.password, myHash);
+            if(result){
+                res.status(200).send('You are logged in');
+             }
+             else {
+            res.status(401).send('Incorrect Password');
+            console.log(req.body.password);
+            }
+     }
+    else
+       res.status(401).send('Incorrect email');
+       console.log(email)
+})
+
+/*
+var otp=generateOTP();
+app.post('/sendotp',function(req,res){
+    email=req.body.email;
+
+     // send mail with defined transport object
+    var mailOptions={
+        to: req.body.email,
+       subject: "Otp for registration is: ",
+       html: otp // html body
+     };
+     
+     transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);   
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  
+        res.status(200).send(otp);
+    });
+    //https://medium.com/@sarthakmittal1461/to-build-otp-verification-for-2-way-authentication-using-node-js-and-express-9e8a68836d62
+});
+*/
+
+
+{
+    const uOtp=req.body.otp;
+    const userData=new User();
+    console.log(uOtp);
+    if(uOtp===userData.otp){
+        isValid=true;
+        console.log('Otp Verified',isValid);
+        res.status(200).send('OTP Verified');
+    }
+    else{
+        console.log('Incorrrect Otp');
+        res.status(401).send('Re-enter Otp');
+    }
+})
+
+if(fOtp===req.body.otp){
+        if(req.body.password===req.body.cnfpassword){
+        pass=req.body.password;
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            bcrypt.hash(pass, salt, function(err, hash) {
+                myHash=hash;
+                console.log('=====Bcrypt=====',pass,hash);
+                //https://www.npmjs.com/package/bcrypt
+            });
+        res.status(200).send('Password Changed Successfully');
+        });
+    }
+        else res.status(403).send('Password does not matched');
+    }
+    else res.status(403).send('Incorrect OTP');
+
+
+    registration api code formatting
+ let otp  = generateOTP();
+    const userData = new User({ 
+    firstName:req.body.firstName,
+    lastName:req.body.lastName,
+    email:req.body.email,
+    username:req.body.username,
+    dob:req.body.dob,
+    updatedOn:new Date(),
+    addedOn:new Date(),
+    otp:otp,
+    fOtp:null,
+    isValid:false,
+    });
+    userData.password=userData.generateHash(req.body.password);
+    userData.save(function (err, userData) {
+    try{  
+    if (err) throw(err);
+    else{
+
+    console.log('Data Saved Successfully to the database Registration');
+    // send mail with defined transport object
+    var mailOptions={
+        to: req.body.email,
+       subject: "Otp for registration is: ",
+       html: `your otp is ${otp}` // html body
+     };
+     
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);   
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    });
+    res.status(200).json(userData);
+    }
+    }
+    catch(err)
+    {
+       
+        if(err.code==11000){
+          let {code,keyValue}=err;
+          let handleError={code,keyValue};
+          // [code:handleError.code,keyValue:handleError.keyValue]=err;
+      res.status(401).json(handleError);
+      }
+    }
+  });
+
+//login code here without try catch
+User.findOne(
+    { $or: [{ email: req.body.email }, { username: req.body.username }] },
+    function (err, user) {
+      if (!user.validPassword(req.body.password)) {
+        res.status(401).json({ msg: 'Password did not matched' });
+      } else {
+        res.status(200).json({ msg: 'Password matched, you are logged in' });
+      }
+    });
+//forgot password try catch before
+const forgotData=User.findOneAndUpdate(
+    { email: req.body.email },
+    { fOtp: fOtp },
+    function (err, user) {
+      if (err) console.log(err);
+      else res.status(200).json({ msg: 'Otp is sent to your email' });
+    }
+  );
+//reset password api pasted after extracting some of the lines
+ // function (err, user) {
+    //   if (!user.verifyfOtp(req.body.fOtp)) {
+    //     res.status(401).json({ msg: 'OTP did not verified' });
+    //   }  {
+    //     ,
+    //       function (err, user) {
+    //         if (err) console.log(err);
+    //         else res.status(200).json({ msg: 'Password resetted' });
+    //       }
+    //     );
+    //   } else res.status(401).json({ msg: "Password doesn't matched" });
+    // }
+
+    { $or: [{ email: req.body.email }, { username: req.body.username }] }
+
+    {$and:[{a: 1}, {b: 1}]}, function (err, results) {
+
+    findOneAndUpdate({ $and: [({ email: req.body.email }, { fOtp: req.body.fOtp })]},
+        { password: newPassword },
+        { new: true }
+      )
+
+      {$and: [{branch: "CSE"}, {joiningYear: 2018}]}
+
+      { $and: [{ email: req.body.email }, { fOtp: req.body.fOtp }] } 
+
+  else if (req.body.password === req.body.cnfpassword)
+    console.log('dhg');
+      console.log('Inside=========', User);
+      const newPassword = User.generateHash(req.body.cnfpassword);
+      console.log('new password', newPassword);
+      const resetData = await User.findOneAndUpdate(
+        { $and: [{ email: req.body.email }, { fOtp: req.body.fOtp }] },
+        { password: newPassword },
+        { new: true }
+      );
