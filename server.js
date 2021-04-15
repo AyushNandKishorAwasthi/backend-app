@@ -8,9 +8,7 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
-console.log(process.env.PASSWORD);
-
-const port = 3000;
+const port = process.env.PORT;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function () {

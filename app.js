@@ -15,6 +15,4 @@ app.post('/login', controller.login);
 app.post('/forgotpassword', controller.forgotPassword);
 app.post('/resetpassword', controller.resetPassword);
 
-console.log(app.get('env'));
-
 module.exports = app;
