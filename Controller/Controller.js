@@ -4,15 +4,6 @@ const User = require('../Model/User.js');
 
 const { transporter, generateOTP } = require('./Transporter');
 
-// function generateOTP() {
-//   const digits = '0123456789';
-//   let otp = '';
-//   for (let i = 0; i < 4; i++) {
-//     otp += digits[Math.floor(Math.random() * 10)];
-//   }
-//   return otp;
-//   // https://www.geeksforgeeks.org/javascript-program-to-generate-one-time-password-otp/
-// }
 //////////////////////////////////////////////Registration API////////////////////////////////
 const { userRegistration } = require('./UserRegistration');
 exports.registration = userRegistration;
@@ -115,4 +106,8 @@ exports.resetPassword = async (req, res) => {
     res.status(401).json({ msg: error });
     // res.status(401).json({ msg: 'Incorrect Email or Otp' });
   }
+};
+
+exports.welcomeUser = async (req, res) => {
+  res.json({ msg: 'Welcome user' });
 };
