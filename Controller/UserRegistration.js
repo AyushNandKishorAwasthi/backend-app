@@ -7,27 +7,29 @@ exports.userRegistration = async (req, res) => {
   try {
     let otp = generateOTP();
     let date = new Date();
+    // let date = new Date().toLocaleString('en-US', {
+    //   timeZone: 'Asia/Kolkata',
+    // });
     const userData = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
       username: req.body.username,
       dob: req.body.dob,
-      updatedOn: date,
       addedOn: date,
-      otp: otp,
       fOtp: null,
       isValid: false,
     });
 
     userData.password = userData.generateHash(req.body.password);
+    userData.otp = userData.generateHash(otp);
     const savedData = await userData.save(userData);
     // if (savedData) throw savedData;
     console.log('This is your savedData====', savedData);
     const token = jwt.sign({ id: savedData._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRY,
     });
-    res.status(200).json({ token, savedData });
+    res.status(200).json({ token, savedData, otp });
     console.log('Data Saved Successfully to the database Registration');
     // send mail with defined transport object
     const mailOptions = {

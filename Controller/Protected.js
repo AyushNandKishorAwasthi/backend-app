@@ -5,7 +5,7 @@ const User = require('../Model/User');
 exports.protect = async (req, res, next) => {
   try {
     // 1) Check if token exists then 2)
-    let token = null;
+    let token;
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith('Bearer')

@@ -41,8 +41,8 @@ const userSchema = new mongoose.Schema({
 
 // hash the password
 userSchema.methods.generateHash = function (password) {
-  if (password.length <= 4) return null;
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+  if (password.length < 4) return null;
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
 };
 
 // checking if password is valid
@@ -52,17 +52,14 @@ userSchema.methods.validPassword = function (password) {
 
 //checking if otp is a valid
 userSchema.methods.verifyOtp = function (otp) {
-  if (otp === this.otp) {
-    return true;
-  }
-  return false;
+  // console.log(otp, this.otp);
+  return bcrypt.compareSync(otp, this.otp);
 };
 
 userSchema.methods.verifyfOtp = function (fOtp) {
-  if (fOtp === this.fOtp) {
-    return true;
-  }
-  return false;
+  console.log(fOtp, this.fOtp);
+  console.log(bcrypt.compareSync(fOtp, this.fOtp));
+  return bcrypt.compareSync(fOtp, this.fOtp);
 };
 //to insert otp when user requests forget password
 // userSchema.methods.forgetPassword=function(fOtp){

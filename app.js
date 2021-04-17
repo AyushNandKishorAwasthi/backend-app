@@ -22,7 +22,7 @@ app
   .get(protected.protect, controller.welcomeUser);
 app.post('/registration', controller.registration);
 app.post('/verifyotp', controller.verifyOtp);
-app.post('/login', controller.login);
+app.route('/login').post(controller.login);
 app.post('/forgotpassword', controller.forgotPassword);
 app.post('/resetpassword', controller.resetPassword);
 
