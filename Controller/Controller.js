@@ -48,12 +48,10 @@ exports.login = async (req, res) => {
 ///////////////////////////////////////////////////// Forgot password API /////////////////////////////////////////////////////
 exports.forgotPassword = async (req, res) => {
   try {
-    let fOtp = generateOTP();
-    const forgotData = await User.findOneAndUpdate(
-      { email: req.body.email },
-      { fOtp: fOtp },
-      { new: true }
-    );
+    const fOtp = generateOTP();
+    const forgotData = await User.findOne({ email: req.body.email });
+    forgotData.fOtp = forgotData.generateHash(fOtp);
+    forgotData.save();
     console.log('forgotData', forgotData);
     if (forgotData == null) throw forgotData;
     else {
@@ -75,7 +73,7 @@ exports.forgotPassword = async (req, res) => {
       });
 
       //https://medium.com/@sarthakmittal1461/to-build-otp-verification-for-2-way-authentication-using-node-js-and-express-9e8a68836d62
-      res.status(200).json({ msg: 'OTP sent to your email' });
+      res.status(200).json({ msg: 'OTP sent to your email', fOtp });
     }
   } catch (error) {
     res.status(404).json({ msg: 'Incorrect email' });
@@ -89,7 +87,17 @@ exports.resetPassword = async (req, res) => {
     if (req.body.password !== req.body.cnfpassword)
       res.status(200).json({ msg: 'Passwords does not matched' });
     else {
-      const user = new User();
+      const resetData = await User.findOne({ email: req.body.email });
+      if (resetData.verifyfOtp(req.body.fOtp)) {
+        resetData.password = resetData.generateHash(req.body.cnfpassword);
+        resetData.updatedOn = new Date();
+        resetData.save();
+        res
+          .status(200)
+          .json({ msg: 'Password updated successfully', resetData });
+      }
+
+      /* const user = new User();
       console.log(user);
       const newPassword = user.generateHash(req.body.cnfpassword);
       console.log('I ran', newPassword);
@@ -100,11 +108,11 @@ exports.resetPassword = async (req, res) => {
       );
       console.log('your reset data', resetData);
       if (resetData == null) throw resetData;
-      else res.status(200).json({ msg: 'Password Updated' });
+      else res.status(200).json({ msg: 'Password Updated' }); */
     }
   } catch (error) {
-    res.status(401).json({ msg: error });
-    // res.status(401).json({ msg: 'Incorrect Email or Otp' });
+    // res.status(401).json({ msg: error });
+    res.status(401).json({ msg: 'Incorrect Email or Otp', error });
   }
 };
 
