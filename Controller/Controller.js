@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 const User = require('../Model/User.js');
 
 const { transporter, generateOTP } = require('./Transporter');
@@ -23,18 +24,25 @@ exports.verifyOtp = async (req, res) => {
 //////////////////////////////////////////////////// Login API ////////////////////////////////////////////////////////////////
 exports.login = async (req, res) => {
   try {
+    console.log(req.body);
     const loginData = await User.findOne({
       $or: [{ email: req.body.email }, { username: req.body.username }],
-    });
-    if (loginData) throw loginData;
+    }).select('_id password');
+    console.log('this is login data', loginData);
+    // if (loginData) throw loginData;
     if (!loginData.validPassword(req.body.password)) {
       res.status(401).json({ msg: 'Password did not matched' });
     } else {
-      res.status(200).json({ msg: 'Password matched, you are logged in' });
+      const token = jwt.sign({ id: loginData._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRY,
+      });
+      res
+        .status(200)
+        .json({ msg: 'Password matched, you are logged in', token });
     }
   } catch (err) {
     console.log(err);
-    res.status(401).json({ msg: 'Username does not exists' });
+    res.status(401).json({ msg: 'Username or Email does not exists' });
   }
 };
 ///////////////////////////////////////////////////// Forgot password API /////////////////////////////////////////////////////
@@ -98,4 +106,8 @@ exports.resetPassword = async (req, res) => {
     res.status(401).json({ msg: error });
     // res.status(401).json({ msg: 'Incorrect Email or Otp' });
   }
+};
+
+exports.welcomeUser = async (req, res) => {
+  res.status(200).json({ msg: 'Welcome user' });
 };

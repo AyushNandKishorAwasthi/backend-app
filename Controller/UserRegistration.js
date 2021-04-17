@@ -2,7 +2,6 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const { transporter, generateOTP } = require('./Transporter');
 const User = require('../Model/User.js');
-const jwt = require('jsonwebtoken');
 exports.userRegistration = async (req, res) => {
   try {
     let otp = generateOTP();
