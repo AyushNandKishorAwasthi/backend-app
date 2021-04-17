@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const { transporter, generateOTP } = require('./Transporter');
 const User = require('../Model/User.js');
-
+const jwt = require('jsonwebtoken');
 exports.userRegistration = async (req, res) => {
   try {
     let otp = generateOTP();
@@ -24,6 +24,9 @@ exports.userRegistration = async (req, res) => {
     userData.password = userData.generateHash(req.body.password);
     userData.otp = userData.generateHash(otp);
     const savedData = await userData.save(userData);
+    const token = jwt.sign({ id: savedData._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRY,
+    });
     // if (savedData) throw savedData;
 <<<<<<< HEAD
     console.log('This is your savedData====', savedData);
@@ -33,7 +36,7 @@ exports.userRegistration = async (req, res) => {
     res.status(200).json({ token, savedData, otp });
 =======
     console.log('This is your savedData====', savedData, otp);
-    res.status(200).json({ savedData, otp });
+    res.status(200).json({ savedData, otp, token });
     console.log('Data Saved Successfully to the database Registration');
     // send mail with defined transport object
     const mailOptions = {

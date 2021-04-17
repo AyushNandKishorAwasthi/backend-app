@@ -53,10 +53,12 @@ userSchema.methods.validPassword = function (password) {
 
 //checking if otp is a valid
 userSchema.methods.verifyOtp = function (otp) {
+  console.log(bcrypt.compareSync(otp, this.otp));
   return bcrypt.compareSync(otp, this.otp);
 };
 
 userSchema.methods.verifyfOtp = function (fOtp) {
+  console.log(bcrypt.compareSync(fOtp, this.fOtp));
   return bcrypt.compareSync(fOtp, this.fOtp);
 };
 
