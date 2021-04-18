@@ -1,4 +1,6 @@
-config.env
+*.env
 node_modules
 .gitignore
 .vscode/settings.json
+miscellaneous text
+testmail.js
