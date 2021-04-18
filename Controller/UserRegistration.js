@@ -25,6 +25,13 @@ exports.userRegistration = async (req, res) => {
     userData.otp = userData.generateHash(otp);
     const savedData = await userData.save(userData);
     // if (savedData) throw savedData;
+<<<<<<< HEAD
+    console.log('This is your savedData====', savedData);
+    const token = jwt.sign({ id: savedData._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRY,
+    });
+    res.status(200).json({ token, savedData, otp });
+=======
     console.log('This is your savedData====', savedData, otp);
     res.status(200).json({ savedData, otp });
     console.log('Data Saved Successfully to the database Registration');
