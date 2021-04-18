@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
 // hash the password
 userSchema.methods.generateHash = function (password) {
   if (password.length < 4) return null;
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(12), null);
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
 // checking if password is valid
@@ -52,20 +52,12 @@ userSchema.methods.validPassword = function (password) {
 
 //checking if otp is a valid
 userSchema.methods.verifyOtp = function (otp) {
-  // console.log(otp, this.otp);
   return bcrypt.compareSync(otp, this.otp);
 };
 
 userSchema.methods.verifyfOtp = function (fOtp) {
-  console.log(fOtp, this.fOtp);
-  console.log(bcrypt.compareSync(fOtp, this.fOtp));
   return bcrypt.compareSync(fOtp, this.fOtp);
 };
-//to insert otp when user requests forget password
-// userSchema.methods.forgetPassword=function(fOtp){
-//   userSchema.fOtp=fOtp;
-//   console.log('OTP Saved Successfully to the database');
-// }
 
 const User = mongoose.model('User', userSchema);
 module.exports = User;
