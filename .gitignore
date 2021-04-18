@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config.env/
-node_modules/
-miscellaneous.txt/
-testemail.js/
-.gitignore/
-=======
-node_modules
 config.env
-
->>>>>>> 0fc52d9 (removed config file from tracking)
+node_modules
+.gitignore
